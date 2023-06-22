@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const User = require("../database/userModel");
-const generateToken = require("../controllers/generateToken");
+const generateToken = require("./generateToken");
 
 const registerUser = asyncHandler(async (req, res) => {
   const { firstname, lastname, email, password } = req.body;
@@ -84,23 +84,5 @@ const allUser = asyncHandler(async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-
-// const allUser = asyncHandler(async (req,res) => {
-
-//   const keyword = req.query.search ? {
-//     $or:[
-//       { firstname : { $regex : req.query.search , $options : "i"}},
-//       { lastname : { $regex : req.query.search , $options : "i" }},
-//     ]
-//   }
-//   :{};
-
-//   const users = await User.find(keyword).find({_id : { $ne : req.user._id }});
-
-//   res.send(users);
-
-// })
-
-
 
 module.exports = { registerUser, userLogin, allUser };
