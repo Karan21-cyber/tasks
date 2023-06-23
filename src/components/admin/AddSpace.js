@@ -1,7 +1,21 @@
-import React from 'react'
-import { Box, Button, FormControl, FormLabel, Heading, Input, Select, Text } from "@chakra-ui/react";
+import React, { useEffect, useState } from 'react'
+import { Box, Button, FormControl, FormLabel, Heading, Input, Select, Text, useStatStyles } from "@chakra-ui/react";
+import axios from 'axios';
 
 function AddSpace() {
+
+  const [locations, setLocations] = useState([]);
+
+  const fetchlocations = async () => {
+    const url = "http://localhost:5000/api/location/";
+    const data = await axios.get(url);
+    setLocations(data.data);
+  };
+
+   useEffect(() => {
+     fetchlocations();
+   }, []);
+
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
       <Heading
@@ -24,21 +38,23 @@ function AddSpace() {
         >
           <Text
             textAlign="center"
-            bg='gray.300'
+            bg="gray.300"
             fontSize="20px"
             fontWeight="600"
             color="green.400"
             paddingBlock="10px"
-          >Add New Space</Text>
+          >
+            Add New Space
+          </Text>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Location Name
             </FormLabel>
             <Select placeholder="Choose Location Name">
-              <option value="option1">Option 1</option>
-              <option value="option2">Option 2</option>
-              <option value="option3">Option 3</option>
+              {locations.map((data, index) => (
+                <option value="option1" key={index}>{data.locationName}</option>
+              ))}
             </Select>
           </FormControl>
 

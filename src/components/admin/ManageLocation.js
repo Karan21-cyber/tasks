@@ -10,15 +10,56 @@ import {
   Th,
   Thead,
   Tr,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import { ParkingState } from "../../contextProvider/ParkingProvider";
+import axios from "axios";
 
 function ManageLocation() {
+  const [locations, setLocations] = useState([]);
 
   const navigate = useNavigate();
+  const {setSelectedLocation} = ParkingState(); 
+  
+  const toast = useToast();
+
+  const fetchlocations = async() => {
+    const url = "http://localhost:5000/api/location/";
+    const data = await axios.get(url);
+    setLocations(data.data);
+  }
+
+
+  // console.log(locations);
+
+  useEffect(() => {
+    fetchlocations();
+  },[]);
+
+  const removeLocation = async(id) => {
+    const url = `http://localhost:5000/api/location/remove/${id}`;
+    const data = await axios.delete(url);
+
+    if(data){
+      toast({
+        title:"Location is Successfully Deleted",
+        status:"success",
+        duration:5000,
+        isClosable:true,
+        position:"bottom"
+      })
+    }
+    window.location.reload(true);
+  }
+
+  const updateLocation = (id) => {
+    setSelectedLocation(id);
+    navigate("/editlocation");
+  }
   
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
@@ -61,50 +102,27 @@ function ManageLocation() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td display="flex" gap="1rem">
-                    <Icon fontSize="20px" color="green.400" cursor="pointer" onClick={() => navigate('/editlocation')}>
-                      <EditIcon />
-                    </Icon>
-                    <Icon fontSize="20px" color="red" cursor="pointer">
-                      <DeleteIcon />
-                    </Icon>
-                  </Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td display="flex" gap="1rem">
-                    <Icon fontSize="20px" color="green.400" cursor="pointer">
-                      <EditIcon />
-                    </Icon>
-                    <Icon fontSize="20px" color="red" cursor="pointer">
-                      <DeleteIcon />
-                    </Icon>
-                  </Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td display="flex" gap="1rem">
-                    <Icon fontSize="20px" color="green.400" cursor="pointer">
-                      <EditIcon />
-                    </Icon>
-                    <Icon fontSize="20px" color="red" cursor="pointer">
-                      <DeleteIcon />
-                    </Icon>
-                  </Td>
-                </Tr>
+                {locations.map((location,index) => (
+                  <Tr key={index}>
+                    <Td>{index+1}</Td>
+                    <Td>{location.locationName}</Td>
+                    <Td>{location.address}</Td>
+                    <Td>{location.phone}</Td>
+                    <Td display="flex" gap="1rem">
+                      <Icon
+                        fontSize="20px"
+                        color="green.400"
+                        cursor="pointer"
+                        onClick={(e) =>updateLocation(location)}
+                      >
+                        <EditIcon />
+                      </Icon>
+                      <Icon fontSize="20px" color="red" cursor="pointer" onClick={(e) => removeLocation(location._id)}>
+                        <DeleteIcon />
+                      </Icon>
+                    </Td>
+                  </Tr>
+                ))}                
               </Tbody>
             </Table>
           </TableContainer>

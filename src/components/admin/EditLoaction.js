@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,9 +7,59 @@ import {
   Heading,
   Input,
   Text,
+  useToast,
 } from "@chakra-ui/react";
+import  { ParkingState } from "../../contextProvider/ParkingProvider";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function EditLocation() {
+  const [locationId, setLocationId] = useState();
+  const [locationName,setLocationsName] =useState();
+  const [phone , setPhone] = useState();
+  const [address, setAddress] = useState();
+  
+  const {selectedLocation} = ParkingState();
+  // console.log(selectedLocation);
+
+  const toast = useToast();
+const navigate = useNavigate();
+
+const handleUpdate = async() => {
+
+  if(!locationName || !phone || !address){
+    toast({
+      title:"Fill All fields",
+      status:"warning",
+      duration:5000,
+      isClosable:true,
+      position:"bottom"
+    })
+    return;
+  }
+
+  try{
+    const url = "http://localhost:5000/api/location/update";
+
+    const data = await axios.put(url, {locationId, locationName,phone,address});
+
+    if(data){
+       toast({
+         title: "Data update Successfully",
+         status: "success",
+         duration: 5000,
+         isClosable: true,
+         position: "bottom",
+       });
+       navigate("/locations");
+    }
+  }
+  catch(error){
+    return;
+  }
+
+}
+
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
       <Heading
@@ -41,30 +91,55 @@ function EditLocation() {
             Edit New Loaction
           </Text>
 
+          <Input
+            value={selectedLocation._id}
+            placeholder="locationId"
+            type="hidden"
+            onChange={(e) => setLocationId(e.target.value)}
+          />
+
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Location Name
             </FormLabel>
-           <Input placeholder="Location Name" type="text" />
-
+            <Input
+              value={selectedLocation.locationName}
+              placeholder="Location Name"
+              type="text"
+              onChange={(e) => setLocationsName(e.target.value)}
+            />
           </FormControl>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Address
             </FormLabel>
-            <Input placeholder="Address" type="text" />
+            <Input
+              value={selectedLocation.address}
+              placeholder="Address"
+              type="text"
+              onChange={(e) => setAddress(e.target.value)}
+            />
           </FormControl>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Phone Number
             </FormLabel>
-            <Input placeholder="Phone Number" type="number" />
+            <Input
+              value={selectedLocation.phone}
+              placeholder="Phone Number"
+              type="number"
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </FormControl>
 
-
-          <Button marginBlock="1rem" color="white" bg="green.400">
+          <Button
+            marginBlock="1rem"
+            color="white"
+            bg="green.400"
+            onClick={handleUpdate}
+          >
             Edit Location
           </Button>
         </Box>

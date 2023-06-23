@@ -12,11 +12,20 @@ import {
   Users,
   Spaces,
 } from "./index";
+import { ParkingState } from '../../contextProvider/ParkingProvider';
 
 
 function Dashboard() {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  
+  const { setUser } = ParkingState();
+
+  const logout = () => {
+    localStorage.removeItem("userInfo");
+    setUser();
+    navigate("/");
+  };
 
   return (
     <Flex>
@@ -33,21 +42,21 @@ function Dashboard() {
         <Text color="purple.600" fontWeight="600" fontSize="20px">
           Parking System
         </Text>
-        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/">Dashboard</Link>
         <Link to="/locations">Manage Locations</Link>
         <Link to="/spaces">Manage Spaces</Link>
         <Link to="/users">Manage Users</Link>
         <Link to="/addlocation">Add Locations</Link>
         <Link to="/addspaces">Add Spaces</Link>
         <Link to="/reports">Manage Reports</Link>
-        <Text onClick={() => navigate("/")} cursor="pointer">
+        <Text onClick={logout} cursor="pointer">
           Logout
         </Text>
       </Flex>
 
       <Box width="85%">
         <Routes>
-          <Route path="/dashboard" element={<Overview />} />
+          <Route path="/" element={<Overview />} />
           <Route path="/locations" element={<ManageLocation />} />
           <Route path="/spaces" element={<Spaces />} />
           <Route path="/users" element={<Users />} />

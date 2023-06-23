@@ -1,3 +1,4 @@
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import {
   Box,
   Button,
@@ -5,13 +6,78 @@ import {
   FormLabel,
   Heading,
   Input,
+  InputGroup,
+  InputRightElement,
   Text,
+  useToast,
 } from "@chakra-ui/react";
-import React from "react";
+import axios from "axios";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
+    const [show, setShow] = useState(false);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    
   const navigate = useNavigate();
+
+   const handleClick = () => {
+     setShow(true);
+   };
+
+  const toast = useToast();
+
+   const handleLogin = async() => {
+    if(!email || !password){
+      toast({
+        title:"Fill all the Fields",
+        status:"warning",
+        duration:5000,
+        isClosable:true,
+        position:"bottom"
+      })
+      return;
+    }
+
+    try{
+      const url = "http://localhost:5000/api/user/login";
+
+      const config = {
+        headers:{
+          "Content-Type":"application/json",
+        },
+      }
+
+      const data = await axios.post(url,{email,password},config);
+
+      toast({
+        title:"Login Successful",
+        status:"success",
+        duration:5000,
+        isClosable:true,
+        position:"bottom"
+      })
+
+      localStorage.setItem("userInfo", JSON.stringify(data.data))
+      // console.log(data.data);
+      
+      navigate("/");
+
+    }
+    catch(error){
+      toast({
+        title:"Error Occured",
+        status:"warning",
+        duration:5000,
+        isClosable:true,
+        position:"bottom",
+      })
+    }
+   }
+
+
+
   return (
     <Box bg="gray" paddingBlock="1rem" height="90vh">
       <Box
@@ -37,22 +103,31 @@ function Login() {
           borderRadius="5px"
           opacity="0.9"
         >
-        
-          <FormControl marginTop="10px">
-            <FormLabel fontSize="15px" fontWeight="400">
-              Email
-            </FormLabel>
-            <Input placeholder="abc@gmail.com" type="email" />
+          <FormControl isRequired>
+            <FormLabel>Email</FormLabel>
+            <Input
+              placeholder="Email"
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </FormControl>
 
-          <FormControl marginTop="10px">
-            <FormLabel fontSize="15px" fontWeight="400">
-              Password
-            </FormLabel>
-            <Input placeholder="Password" type="Password" />
+          <FormControl isRequired>
+            <FormLabel>Password</FormLabel>
+            <InputGroup>
+              <Input
+                type={show ? "text" : "password"}
+                placeholder="Password"
+                onChange={(e) => setPassword(e.target.value)}
+              />
+              <InputRightElement>
+                <Button onClick={handleClick} bg="none">
+                  {show ? <ViewOffIcon /> : <ViewIcon />}
+                </Button>
+              </InputRightElement>
+            </InputGroup>
           </FormControl>
 
-          <Text
+          <Box
             marginTop="2rem"
             color="gray"
             fontSize="12px"
@@ -69,8 +144,10 @@ function Login() {
               <b>Register</b>
             </Text>
             .
-          </Text>
-          <Button marginBlock="1rem" color="white" bg="green.400">
+          </Box>
+          <Button marginBlock="1rem" color="white" bg="green.400"
+          onClick={handleLogin}
+          >
             Login
           </Button>
         </Box>

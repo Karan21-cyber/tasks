@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Box,
   Button,
@@ -7,9 +7,66 @@ import {
   Heading,
   Input,
   Text,
+  useToast,
 } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function AddLocation() {
+  const [locationName, setLocationsName] = useState();
+  const [phone, setPhone] = useState();
+  const [address, setAddress] = useState();
+
+  const navigate = useNavigate();
+  const toast = useToast();
+
+  const handleSubmit = async () => {
+
+    if (!locationName || !phone || !address) {
+      toast({
+        title: "Fill All fields",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    try {
+      const url = "http://localhost:5000/api/location/addlocation";
+
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      };
+
+      const data = await axios.post(
+        url,
+        {
+          locationName,
+          address,
+          phone,
+        },
+        config
+      );
+
+      if (data) {
+        toast({
+          title: "Data update Successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        navigate("/locations");
+      }
+    } catch (error) {
+      return;
+    }
+  };
+
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
       <Heading
@@ -45,26 +102,41 @@ function AddLocation() {
             <FormLabel fontSize="15px" fontWeight="400">
               Location Name
             </FormLabel>
-           <Input placeholder="Location Name" type="text" />
-
+            <Input
+              placeholder="Location Name"
+              type="text"
+              onChange={(e) => setLocationsName(e.target.value)}
+            />
           </FormControl>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Address
             </FormLabel>
-            <Input placeholder="Address" type="text" />
+            <Input
+              placeholder="Address"
+              type="text"
+              onChange={(e) => setAddress(e.target.value)}
+            />
           </FormControl>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Phone Number
             </FormLabel>
-            <Input placeholder="Phone Number" type="number" />
+            <Input
+              placeholder="Phone Number"
+              type="number"
+              onChange={(e) => setPhone(e.target.value)}
+            />
           </FormControl>
 
-
-          <Button marginBlock="1rem" color="white" bg="green.400">
+          <Button
+            marginBlock="1rem"
+            color="white"
+            bg="green.400"
+            onClick={handleSubmit}
+          >
             Add Location
           </Button>
         </Box>
