@@ -9,10 +9,14 @@ import Location from './components/Location';
 import SelectSpot from './components/SelectSpot';
 import Booking from './components/Booking';
 import Payment from './components/Payment';
+import Bill from './components/Bill';
+import Completion from './components/Completion';
+import Dashboard from './components/admin/Dashboard';
 
 function App() {
   return (
     <>
+      {/* for users */}
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -23,7 +27,14 @@ function App() {
         <Route path="/selectlocation/:spot_id" element={<SelectSpot />} />
         <Route path="/booking" element={<Booking />} />
         <Route path="/payment" element={<Payment />} />
+        <Route path="/bill" element={<Bill />} />
+        <Route path="/completion" element={<Completion />} />
       </Routes>
+
+      {/* for admin */}
+      
+      <Dashboard />
+      
     </>
   );
 }

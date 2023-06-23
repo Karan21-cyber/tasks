@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardBody, CardFooter, CardHeader, Heading, Icon, Image, SimpleGrid, Text } from "@chakra-ui/react";
+import { Box, Button, Card, CardBody, CardFooter, CardHeader, Heading, Icon, Image, Text } from "@chakra-ui/react";
 import React from "react";
 import homeimage from "../assets/homepage.jpg";
 import { SettingsIcon } from '@chakra-ui/icons'

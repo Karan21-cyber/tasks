@@ -21,7 +21,14 @@ function Signup() {
           User Registration Form
         </Heading>
 
-        <Box width="500px" bg="whiteAlpha.900" padding="1rem" gap="1rem" borderRadius="5px" opacity="0.9">
+        <Box
+          width="500px"
+          bg="whiteAlpha.900"
+          padding="1rem"
+          gap="1rem"
+          borderRadius="5px"
+          opacity="0.9"
+        >
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Full name
@@ -45,6 +52,13 @@ function Signup() {
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
+              Address
+            </FormLabel>
+            <Input placeholder="Address" type="text" />
+          </FormControl>
+
+          <FormControl marginTop="10px">
+            <FormLabel fontSize="15px" fontWeight="400">
               Password
             </FormLabel>
             <Input placeholder="Password" type="Password" />
@@ -56,13 +70,20 @@ function Signup() {
             </FormLabel>
             <Input placeholder="Password" type="password" />
           </FormControl>
-          <Text marginTop="2rem" color="gray" fontSize="12px" display="flex" gap="5px">
+
+          <Text
+            marginTop="2rem"
+            color="gray"
+            fontSize="12px"
+            display="flex"
+            gap="5px"
+          >
             Already Have an account
-            <Text 
-            color="blue"
-            textDecoration="underline"
-            cursor="pointer"
-            onClick={(e) => navigate("/login")}
+            <Text
+              color="blue"
+              textDecoration="underline"
+              cursor="pointer"
+              onClick={(e) => navigate("/login")}
             >
               <b>Login</b>
             </Text>
