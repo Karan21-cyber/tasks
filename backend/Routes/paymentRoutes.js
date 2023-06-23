@@ -1,12 +1,9 @@
 const express = require("express");
+const { allPayments, addPayment, singlePayment } = require("../Controller/paymentController");
+const router = express.Router();
 
-// const { fetchParking, updateParking, addParking } = require("../Controller/parkingController");
+router.route("/").get(allPayments);
+router.route("/addpayment").post(addPayment);
+router.route("/single/:id").get(singlePayment);
 
-// const router = express.Router();
-
-// router.get("/", fetchParking);
-// router.post("/addparking", addParking);
-// router.put("/update", updateParking);
-
-
-// module.exports = router;
+module.exports = router;

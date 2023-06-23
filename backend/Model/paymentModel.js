@@ -4,7 +4,8 @@ const paymentSchema = mongoose.Schema({
     user:[{type:mongoose.Types.ObjectId, ref:"user"}],
     location:[{type:mongoose.Types.ObjectId, ref:"location"}],
     space:[{type:mongoose.Types.ObjectId , ref:"space"}],
-    slotno:{type:Number},
+    reserve:[{type:mongoose.Types.ObjectId , ref:"reserve"}],
+    slotNo:{type:Number},
     vehicalNo:{type:String},
     entryDate:{type:String},
     totalHrs:{type:String},
@@ -14,5 +15,5 @@ const paymentSchema = mongoose.Schema({
     timestamps:true,
 })
 
-const payment = mongoose.Model("payment", paymentSchema);
+const payment = mongoose.model("payment", paymentSchema);
 module.exports = payment;

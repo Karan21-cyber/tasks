@@ -1,15 +1,10 @@
 const express = require("express");
+const { allReserves, addReserve, removeReserve } = require("../Controller/reserveController");
+const router = express.Router();
 
-// const {
-//   fetchParking,
-//   updateParking,
-//   addParking,
-// } = require("../Controller/parkingController");
 
-// const router = express.Router();
+router.route("/").get(allReserves);
+router.route("/addreserve").post(addReserve);
+router.route("/remove/:id").delete(removeReserve);
 
-// router.get("/", fetchParking);
-// router.post("/addparking", addParking);
-// router.put("/update", updateParking);
-
-// module.exports = router;
+module.exports = router;
