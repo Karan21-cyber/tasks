@@ -1,17 +1,62 @@
 import { Box, Heading, Icon, Text } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import { useNavigate } from "react-router-dom";
+import { ParkingState } from "../contextProvider/ParkingProvider";
+import axios from "axios";
 
 function SelectSpot() {
+
+  const [reserve, setReserve] = useState(false);
+  const [locationId, setLocationId] = useState();
+  const [spaceId, setSpaceId] = useState();
+
+  const boxes = [];
+  const { setSelectedSlot, selectedSpace, selectedLocation } = ParkingState();
+  const slots = selectedSpace.slots;
+
   const navigate = useNavigate();
 
-    const handleSpot = () => {
-        navigate("/booking");
+// const isSlotReserve = async (spot) => {
+//   try {
+//     const data = await axios.get(
+//       "http://localhost:5000/api/reserve/singlefetch",
+//       {
+//         params: {
+//           location: selectedLocation._id,
+//           space: selectedSpace._id,
+//           slotNo: spot,
+//         },
+//       }
+//     );
+
+//     if (data && data.status === 200) {
+//       // console.log(data);
+//       setReserve(true);
+//     } else {
+//       setReserve(false);
+//     }
+//   } catch (error) {
+//     // Handle any error that occurred during the request
+//     // console.error(error);
+//     return false;
+//   }
+// };
+
+
+  const handleSpot = (spot) => {
+    setSelectedSlot(spot);
+    navigate("/booking");
+  };
+
+  const displaySlots = () => {
+    for (let i = 1; i <= slots; i++) {
+      boxes.push(i);
     }
+  };
 
   return (
-    <Box bg="gray" paddingBlock="1rem" height="90vh" px="10%">
+    <Box bg="gray" paddingBlock="2rem" px="10%">
       <Heading
         marginBlock="10px"
         color="whiteAlpha.800"
@@ -26,49 +71,59 @@ function SelectSpot() {
         parking spot.
       </Text>
 
-      <Box marginTop="3rem" display="flex" gap="1rem">
-        <Box
-          bg="white"
-          width="60px"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          flexDirection="column"
-          padding="5px"
-          borderRadius="5px"
-          cursor="pointer"
-          onClick={handleSpot}
-        >
-          <Icon fontSize="40px" color="red">
-            <LocalParkingIcon />
-          </Icon>
-          <Text fontSize="sm" fontWeight="600">
-            Slot 1
-          </Text>
-        </Box>
+      <Box marginTop="3rem" display="flex" gap="1rem" flexWrap="wrap">
+        {displaySlots()}
 
-        <Box
-          bg="white"
-          width="60px"
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          flexDirection="column"
-          padding="5px"
-          borderRadius="5px"
-          cursor="pointer"
-          onClick={handleSpot}
-        >
-          <Icon fontSize="40px" color="red">
-            <LocalParkingIcon />
-          </Icon>
-          <Text fontSize="sm" fontWeight="600">
-            Slot 2
-          </Text>
-        </Box>
-
+        {boxes.map((spot) =>
+          // isSlotReserve(spot)  ? (
+            // <>
+            
+              <Box
+                key={spot}
+                bg="green.400"
+                width="60px"
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                flexDirection="column"
+                padding="5px"
+                borderRadius="5px"
+                cursor="pointer"
+                onClick={(e) => handleSpot(spot)}
+              >
+                <Icon fontSize="40px" color="red">
+                  <LocalParkingIcon />
+                </Icon>
+                <Text fontSize="sm" fontWeight="600">
+                  Slot {spot}
+                </Text>
+              </Box>
+            // </>
+          // ) : (
+          //   <>
+          //     <Box
+          //       key={spot}
+          //       bg="white"
+          //       width="60px"
+          //       display="flex"
+          //       justifyContent="center"
+          //       alignItems="center"
+          //       flexDirection="column"
+          //       padding="5px"
+          //       borderRadius="5px"
+          //       cursor="pointer"
+          //     >
+          //       <Icon fontSize="40px" color="red">
+          //         <LocalParkingIcon />
+          //       </Icon>
+          //       <Text fontSize="sm" fontWeight="600">
+          //         Slot {spot}
+          //       </Text>
+          //     </Box>
+          //   </>
+          // )
+        )}
       </Box>
-
     </Box>
   );
 }

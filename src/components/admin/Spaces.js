@@ -11,13 +11,44 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { ParkingState } from "../../contextProvider/ParkingProvider";
 
 function Spaces() {
+
+  const [spaces , setSpaces ] = useState([]);
+
   const navigate = useNavigate();
+  const {setSelectedSpace} = ParkingState();
+
+  const fetchSpaces = async() => {
+    const url = "http://localhost:5000/api/space/";
+    const data = await axios.get(url);
+    setSpaces(data.data);
+  }
+
+  useEffect(() => {
+    fetchSpaces();
+  },[])
+
+const handleEdit = (space) => {
+  setSelectedSpace(space);
+  navigate("/editSpace");
+}
+
+const handleRemove = async(id) => {
+  const url = `http://localhost:5000/api/space/remove/${id}`;
+  const data = await axios.delete(url);
+
+  if(data){
+    fetchSpaces();
+   navigate("/spaces");
+  }
+}
 
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
@@ -61,53 +92,33 @@ function Spaces() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td display="flex" gap="1rem">
-                    <Icon fontSize="20px" color="green.400" cursor="pointer" onClick={() => navigate('/editSpace')}>
-                      <EditIcon />
-                    </Icon>
-                    <Icon fontSize="20px" color="red" cursor="pointer">
-                      <DeleteIcon />
-                    </Icon>
-                  </Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td display="flex" gap="1rem">
-                    <Icon fontSize="20px" color="green.400" cursor="pointer">
-                      <EditIcon />
-                    </Icon>
-                    <Icon fontSize="20px" color="red" cursor="pointer">
-                      <DeleteIcon />
-                    </Icon>
-                  </Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td display="flex" gap="1rem">
-                    <Icon fontSize="20px" color="green.400" cursor="pointer">
-                      <EditIcon />
-                    </Icon>
-                    <Icon fontSize="20px" color="red" cursor="pointer">
-                      <DeleteIcon />
-                    </Icon>
-                  </Td>
-                </Tr>
+                {spaces.map((space, index) => (
+                  <Tr key={index}>
+                    <Td>{index + 1}</Td>
+                    <Td>{space.location[0].locationName}</Td>
+                    <Td>{space.spaceName}</Td>
+                    <Td>{space.slots}</Td>
+                    <Td>{space.price}</Td>
+                    <Td display="flex" gap="1rem">
+                      <Icon
+                        fontSize="20px"
+                        color="green.400"
+                        cursor="pointer"
+                        onClick={() => handleEdit(space)}
+                      >
+                        <EditIcon />
+                      </Icon>
+                      <Icon
+                        fontSize="20px"
+                        color="red"
+                        cursor="pointer"
+                        onClick={() => handleRemove(space._id)}
+                      >
+                        <DeleteIcon />
+                      </Icon>
+                    </Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </TableContainer>

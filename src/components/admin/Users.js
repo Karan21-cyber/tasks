@@ -10,9 +10,23 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 function Users() {
+
+    const [users,setUsers] = useState([]);
+
+    const fetchUsers = async () => {
+      const url = "http://localhost:5000/api/user/";
+      const data = await axios.get(url);
+      setUsers(data.data);
+    };
+
+    useEffect(() => {
+      fetchUsers();
+    }, []);
+
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
       <Heading
@@ -54,29 +68,15 @@ function Users() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                </Tr>
+                {users.map((userData, index) => (
+                  <Tr key={index}>
+                    <Td>{index+1}</Td>
+                    <Td>{userData.name}</Td>
+                    <Td>{userData.email}</Td>
+                    <Td>{userData.phone}</Td>
+                    <Td>{userData.address}</Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </TableContainer>

@@ -32,10 +32,7 @@ function ManageLocation() {
     const data = await axios.get(url);
     setLocations(data.data);
   }
-
-
-  // console.log(locations);
-
+  
   useEffect(() => {
     fetchlocations();
   },[]);
@@ -53,7 +50,8 @@ function ManageLocation() {
         position:"bottom"
       })
     }
-    window.location.reload(true);
+    fetchlocations();
+    navigate("/locations")
   }
 
   const updateLocation = (id) => {

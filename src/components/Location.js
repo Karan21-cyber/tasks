@@ -1,15 +1,34 @@
 import { Box, Heading, Table,  TableContainer, Tbody, Td, Text, Th, Thead, Tr } from '@chakra-ui/react'
-import React from 'react'
-import { useNavigate } from 'react-router-dom';
-
+import React, { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
+import {ParkingState} from "../contextProvider/ParkingProvider"
+import axios from "axios"
 
 function Location() {
 
-    const navigate = useNavigate();
+    const [spaces, setSpaces] = useState([]);
 
-    const handlebooking = () => {
-        navigate("/selectlocation/:4643121")
+    const navigate = useNavigate();
+    const params = useParams();
+
+    const { user, setSelectedSpace ,selectedLocation} = ParkingState();
+
+    const fetchSpaces = async () => {
+      const locationId = params.location_id;
+      const url = `http://localhost:5000/api/space/group/${locationId}`;
+      const data = await axios.get(url);
+      setSpaces(data.data);
+    };
+
+    useEffect(() => {
+      fetchSpaces();
+    }, [navigate]);
+
+    const handlebooking = (data, id) => {
+        setSelectedSpace(data);
+        navigate(`/selectlocation/${id}`)
     }
+
   return (
     <Box bg="gray" paddingBlock="1rem" height="90vh" px="10%">
       <Heading
@@ -40,37 +59,36 @@ function Location() {
               </Tr>
             </Thead>
             <Tbody>
-              <Tr>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td>inches</Td>
-                <Td><Text color="purple" 
-                    textDecoration="underline"
-                    cursor="pointer"
-                    onClick={handlebooking}
-                >Book Parking</Text></Td>
-              </Tr>
-
-              <Tr>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-              </Tr>
-
-              <Tr>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-                <Td>inches</Td>
-                <Td>millimetres (mm)</Td>
-              </Tr>
-
+              {spaces.map((data, index) => (
+                <Tr key={index}>
+                  <Td>{index + 1}</Td>
+                  <Td>{selectedLocation.locationName}</Td>
+                  <Td>{data.spaceName}</Td>
+                  <Td>{data.slots}</Td>
+                  <Td>available parking</Td>
+                  <Td>
+                    {user ? (
+                      <Text
+                        color="purple"
+                        textDecoration="underline"
+                        cursor="pointer"
+                        onClick={(e) => handlebooking(data, data._id)}
+                      >
+                        Book Parking
+                      </Text>
+                    ) : (
+                      <Text
+                        color="purple"
+                        textDecoration="underline"
+                        cursor="pointer"
+                        onClick={(e) => navigate("/login")}
+                      >
+                        Book Parking
+                      </Text>
+                    )}
+                  </Td>
+                </Tr>
+              ))}
             </Tbody>
           </Table>
         </TableContainer>

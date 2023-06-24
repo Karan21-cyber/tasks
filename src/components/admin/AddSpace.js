@@ -1,10 +1,27 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Button, FormControl, FormLabel, Heading, Input, Select, Text, useStatStyles } from "@chakra-ui/react";
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  Heading,
+  Input,
+  Select,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function AddSpace() {
-
   const [locations, setLocations] = useState([]);
+  const [locationId, setLocationId] = useState();
+  const [spaceName, setSpaceName] = useState();
+  const [slots, setSlot] = useState();
+  const [price, setPrice] = useState();
+
+  const navigate = useNavigate();
+  const toast = useToast();
 
   const fetchlocations = async () => {
     const url = "http://localhost:5000/api/location/";
@@ -12,9 +29,56 @@ function AddSpace() {
     setLocations(data.data);
   };
 
-   useEffect(() => {
-     fetchlocations();
-   }, []);
+  useEffect(() => {
+    fetchlocations();
+  }, []);
+
+  const handleSubmit = async () => {
+    if (!locationId || !spaceName || !slots || !price) {
+      toast({
+        title: "All Fields are required",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    const url = "http://localhost:5000/api/space/addspace";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    const data = await axios.post(
+      url,
+      { location: locationId, spaceName, slots, price },
+      config
+    );
+
+    if (data) {
+      toast({
+        title: "Space Added Successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+
+      navigate("/spaces");
+
+    } else {
+      toast({
+        title: "Registration Failed",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        positon: "bottom",
+      });
+    }
+  };
 
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
@@ -51,9 +115,14 @@ function AddSpace() {
             <FormLabel fontSize="15px" fontWeight="400">
               Location Name
             </FormLabel>
-            <Select placeholder="Choose Location Name">
+            <Select
+              placeholder="Choose Location Name"
+              onChange={(e) => setLocationId(e.target.value)}
+            >
               {locations.map((data, index) => (
-                <option value="option1" key={index}>{data.locationName}</option>
+                <option value={data._id} key={index}>
+                  {data.locationName}
+                </option>
               ))}
             </Select>
           </FormControl>
@@ -62,24 +131,41 @@ function AddSpace() {
             <FormLabel fontSize="15px" fontWeight="400">
               Space Name
             </FormLabel>
-            <Input placeholder="Space Name" type="email" />
+            <Input
+              placeholder="Space Name"
+              type="text"
+              onChange={(e) => setSpaceName(e.target.value)}
+            />
           </FormControl>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               No of Slots
             </FormLabel>
-            <Input placeholder="No of Slots" type="number" />
+            <Input
+              placeholder="No of Slots"
+              type="number"
+              onChange={(e) => setSlot(e.target.value)}
+            />
           </FormControl>
 
           <FormControl marginTop="10px">
             <FormLabel fontSize="15px" fontWeight="400">
               Price Per Slot
             </FormLabel>
-            <Input placeholder="Price Per Slot" type="number" />
+            <Input
+              placeholder="Price Per Slot"
+              type="number"
+              onChange={(e) => setPrice(e.target.value)}
+            />
           </FormControl>
 
-          <Button marginBlock="1rem" color="white" bg="green.400">
+          <Button
+            marginBlock="1rem"
+            color="white"
+            bg="green.400"
+            onClick={handleSubmit}
+          >
             Add Spaces
           </Button>
         </Box>
@@ -88,4 +174,4 @@ function AddSpace() {
   );
 }
 
-export default AddSpace
+export default AddSpace;
