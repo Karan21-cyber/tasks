@@ -3,10 +3,10 @@ const Reserve = require("../Model/reserveModel");
 // create reserve slot
 
 const addReserve = async (req, res) => {
-  const { user, location, space, slotNo,  vehicalNo, date, time, hours } =
+  const { user, location, space, slotNo,  vehicalNo, entryDate, entryTime, hours } =
     req.body;
 
-  if (!user || !location || !space || !slotNo || !vehicalNo || !date || !time || !hours) {
+  if (!user || !location || !space || !slotNo || !vehicalNo || !entryDate || !entryTime || !hours) {
     res.status(400).json({"error":"All fields are required"});
 }
 
@@ -19,8 +19,8 @@ const addReserve = async (req, res) => {
       space,
       slotNo,
       vehicalNo,
-      date,
-      time,
+      entryDate,
+      entryTime,
       hours,
     });
 
@@ -46,6 +46,20 @@ const allReserves = async (req, res) => {
     else{
         res.status(400).json({error:"Unable to fetch data"});
     }
+}
+
+const singleReseve = async (req,res) => {
+  const {location,space,slotNo} = req.query;
+
+  const reserve = await Reserve.findOne({location:[location],space:[space],slotNo });
+// console.log(req.query);
+
+  if (reserve) {
+    console.log(reserve);
+    res.status(201).json(reserve);
+  } else {
+    res.status(400).json({"error":"error occured"});
+  }
 }
 
 // update Reservers 
@@ -89,4 +103,4 @@ const removeReserve = async(req,res) => {
 
 
 
-module.exports = {addReserve,allReserves,removeReserve};
+module.exports = {addReserve,allReserves,removeReserve,singleReseve};

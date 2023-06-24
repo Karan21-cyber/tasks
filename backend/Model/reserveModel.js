@@ -7,8 +7,8 @@ const reserveSchema = mongoose.Schema(
     space: [{ type: mongoose.Types.ObjectId, ref: "space" }],
     slotNo: { type: Number },
     vehicalNo: { type: String },
-    date: { type: String },
-    time: { type: String },
+    entryDate: { type: String },
+    entryTime: { type: String },
     hours: { type: String },
   },
   {

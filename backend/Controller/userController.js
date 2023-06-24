@@ -72,4 +72,15 @@ const userLogin = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, userLogin };
+const allUsers = async (req, res) => {
+  const data = await User.find({});
+
+  if (data) {
+    res.status(201).json(data);
+  } else {
+    res.status(400).json({ Error: "Unable to fetch data" });
+  }
+};
+
+
+module.exports = { registerUser, userLogin, allUsers };
