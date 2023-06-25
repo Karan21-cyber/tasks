@@ -2,7 +2,8 @@ const mongoose = require("mongoose");
 
 const reserveSchema = mongoose.Schema(
   {
-    user: [{ type: mongoose.Types.ObjectId, ref: "user" }],
+    booking: [{ type: mongoose.Types.ObjectId, ref: "booking" }],
+    user:[{type:mongoose.Types.ObjectId, ref:"user"}],
     location: [{ type: mongoose.Types.ObjectId, ref: "location" }],
     space: [{ type: mongoose.Types.ObjectId, ref: "space" }],
     slotNo: { type: Number },
@@ -10,6 +11,7 @@ const reserveSchema = mongoose.Schema(
     entryDate: { type: String },
     entryTime: { type: String },
     hours: { type: String },
+    amount:{type:String}
   },
   {
     timestamps: true,

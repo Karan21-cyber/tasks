@@ -63,12 +63,13 @@ const userLogin = async (req, res) => {
       address: user.address,
       role: user.role,
       token: generateToken(user._id),
-    });
+    })
   } else {
     res.status(400).json({
       error: "Unable to find user",
     });
     throw new Error("Unable to find User");
+  
   }
 };
 

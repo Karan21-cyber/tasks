@@ -16,26 +16,43 @@ const addPayment = async (req, res) => {
     !reserve
   ) {
     res.status(400).json({ error: "All fields are required" });
+    return;
   }
 
-    const payment = await Payment.create({
-      user,
-      location,
-      space,
-      reserve,
-      slotNo,
-      vehicalNo,
-      entryDate,
-      totalHrs,
-      amount
-    });
+  const paymentExist = await Payment.find({
+    user,
+    location,
+    space,
+    reserve,
+    slotNo,
+    vehicalNo,
+    entryDate,
+    totalHrs,
+    amount,
+  });
 
-    if (payment) {
-      res.status(201).json(payment);
-    } else {
-      res.status(400).json({ error: "Unable to  insert in payment" });
-    }
- 
+  // if(paymentExist){
+    
+  // }
+
+   const payment = await Payment.create({
+     user,
+     location,
+     space,
+     reserve,
+     slotNo,
+     vehicalNo,
+     entryDate,
+     totalHrs,
+     amount,
+   });
+
+   if (payment) {
+     res.status(201).json(payment);
+   } else {
+     res.status(400).json({ error: "Unable to  insert in payment" });
+   }
+
 };
 
 
