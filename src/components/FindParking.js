@@ -27,7 +27,7 @@ function FindParking() {
 
     useEffect(() => {
       fetchlocations();
-    }, [navigate]);
+    }, []);
 
 
   return (
@@ -54,6 +54,7 @@ function FindParking() {
             width="250px"
             borderRadius="10px"
             bg="whiteAlpha.800"
+            cursor="pointer"
             onClick={(e) => handleClick(data._id,data)}
           >
             <Icon fontSize="40px" color="red">

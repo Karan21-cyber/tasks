@@ -8,6 +8,7 @@ function ParkingProvider({ children }) {
   const [selectedLocation, setSelectedLocation] = useState();
   const [selectedSpace, setSelectedSpace] = useState();
   const [selectedSlot, setSelectedSlot] = useState();
+  const [amount, setAmount] = useState(0);
   const [role, setRole] = useState("");
 
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ function ParkingProvider({ children }) {
         setSelectedSpace,
         selectedSlot,
         setSelectedSlot,
+        amount, setAmount
       }}
     >
       {children}

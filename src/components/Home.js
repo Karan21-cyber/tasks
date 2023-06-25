@@ -27,7 +27,7 @@ function Home() {
         display="flex"
         justifyContent="center"
         gap="1rem"
-        paddingBlock="1rem"
+        paddingBlock="3rem"
       >
         <Card width="220px">
           <SettingsIcon

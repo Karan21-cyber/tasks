@@ -8,11 +8,10 @@ import FindParking from "./components/FindParking";
 import Location from "./components/Location";
 import SelectSpot from "./components/SelectSpot";
 import Booking from "./components/Booking";
-import Payment from "./components/Payment";
-import Bill from "./components/Bill";
 import Completion from "./components/Completion";
 import Dashboard from "./components/admin/Dashboard";
 import { ParkingState } from "./contextProvider/ParkingProvider";
+import Footer from "./components/Footer";
 
 
 function App() {
@@ -34,10 +33,9 @@ function App() {
           <Route path="/location/:location_id" element={<Location />} />
           <Route path="/selectlocation/:spot_id" element={<SelectSpot />} />
           <Route path="/booking" element={<Booking />} />
-          <Route path="/payment" element={<Payment />} />
-          <Route path="/bill" element={<Bill />} />
-          <Route path="/completion" element={<Completion />} />
+          <Route path="/success" element={<Completion />} />
         </Routes>
+        <Footer />
       </>
     );
   }

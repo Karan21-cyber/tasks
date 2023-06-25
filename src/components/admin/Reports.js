@@ -10,9 +10,23 @@ import {
   Thead,
   Tr,
 } from "@chakra-ui/react";
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 
 function Reports() {
+
+  const [reports, setReports] = useState([]);
+
+  const fetchReports = async () => {
+    const url = "http://localhost:5000/api/payment";
+    const data = await axios.get(url);
+    setReports(data.data);
+  };
+
+  useEffect(() => {
+    fetchReports();
+  }, []);
+
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
       <Heading
@@ -58,41 +72,19 @@ function Reports() {
                 </Tr>
               </Thead>
               <Tbody>
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                </Tr>
-
-                <Tr>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>inches</Td>
-                  <Td>millimetres (mm)</Td>
-                  <Td>millimetres (mm)</Td>
-                </Tr>
+                {reports.map((data, index) => (
+                  <Tr key={index}>
+                    <Td>{index + 1}</Td>
+                    <Td>{data.user[0].name}</Td>
+                    <Td>{data.location[0].locationName}</Td>
+                    <Td>{data.space[0].spaceName}</Td>
+                    <Td>{data.slotNo}</Td>
+                    <Td>{data.vehicalNo}</Td>
+                    <Td>{data.entryDate}</Td>
+                    <Td>{data.totalHrs}</Td>
+                    <Td>{data.amount}</Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
           </TableContainer>

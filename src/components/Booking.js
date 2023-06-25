@@ -8,53 +8,64 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { ParkingState } from "../contextProvider/ParkingProvider";
 import axios from "axios";
 
 function Booking() {
+  const [locationId,setLocationId] = useState();
+  const [spaceId, setSpaceId] = useState();
+  const [locationName, setLocationName] = useState();
+  const [spaceName, setSpaceName] = useState();
+  
+  const [spot, setSpot] = useState();
+  const [price , setPrice] = useState();
+  const [booking ,setBooking] = useState();
+
   const [vehicalNo, setVehicalNo] = useState();
   const [entryTime, setEntryTime] = useState();
   const [entryDate, setEntryDate] = useState();
   const [hours, setHours] = useState(0);
-  const [amount, setAmount] = useState(0.0);
+  const [amount,setAmount] = useState(0);
 
-  const navigate = useNavigate();
   const toast = useToast();
-  const {user,selectedLocation, selectedSlot, selectedSpace } = ParkingState();
 
-  const handleSubmit = async () => {
-    if (!vehicalNo || !entryDate || !entryTime || !hours) {
-      toast({
-        title: "All Fields are required",
-        status: "warning",
-        duration: 5000,
-        isClosable: true,
-        position: "bottom",
-      });
-      return;
-    }
+  const {user } = ParkingState();
 
-    // navigate("/payment");
-    console.log(vehicalNo, entryDate, entryTime, hours, amount);
-    const url = "http://localhost:5000/api/reserve/addreserve";
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+const handleSubmit = async () => {
+  if (!vehicalNo || !entryDate || !entryTime || !hours) {
+    toast({
+      title: "All Fields are required",
+      status: "warning",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+    return;
+  }
 
-    const data = await axios.post(
+  const bookingId = localStorage.getItem("booking");
+
+  const url = "http://localhost:5000/api/reserve/addreserve";
+  const config = {
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
+
+  try {
+    const  data  = await axios.post(
       url,
       {
-        user:user._id,
-        location: selectedLocation._id,
-        space: selectedSpace._id,
-        slotNo: selectedSlot,
+        booking: bookingId,
+        user: user._id,
+        location: locationId,
+        space: spaceId,
+        slotNo: spot,
         vehicalNo,
         entryDate,
         entryTime,
         hours,
+        amount,
       },
       config
     );
@@ -67,25 +78,80 @@ function Booking() {
         isClosable: true,
         position: "bottom",
       });
-
-      navigate("/bill");
     }
-  };
+  } catch (error) {
+    toast({
+      title: "Error",
+      description: "Unable to reserve slots",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+      position: "bottom",
+    });
+  }
+};
 
-  const totalAmount = () => {
-    const price = selectedSpace.price;
 
-    if (hours === null) {
-      setAmount(0.0);
-    } else {
-      var totalAmount = Number(hours) * Number(price);
-      setAmount(totalAmount);
+
+  const fetchBooking = async() => {
+    const users = JSON.parse(localStorage.getItem("userInfo"));
+     const locations = JSON.parse(localStorage.getItem("location"));
+     const spaces = JSON.parse(localStorage.getItem("space"));
+     const spot = localStorage.getItem("slotNo");
+     
+     setLocationId(locations._id);
+     setSpaceId(spaces._id);
+     setLocationName(locations.locationName);
+     setSpaceName(spaces.spaceName);
+     setSpot(spot);
+     setPrice(spaces.price);
+
+    const singledata = await axios.get(
+      "http://localhost:5000/api/booking/singlebooking",
+      {
+        params:{
+          user: users._id,
+          location: locations._id,
+          space: spaces._id,
+          slotNo: spot,
+      },
     }
-  };
+    );
+      
+    if(singledata){
+      setBooking(singledata.data);
+    }
+  }
+
+  if(booking){
+    localStorage.removeItem("booking");
+    localStorage.setItem("booking", booking._id);
+  }
+
+  useEffect(() => {
+    fetchBooking();
+  },[]);
+
+
+    const totalAmount = () => {
+      if (hours === null) {
+        setAmount(0.0);
+      } else {
+        var totalAmount = Number(hours) * Number(price);
+        setAmount(totalAmount);
+      }
+    };
 
   useEffect(() => {
     totalAmount();
   }, [hours]);
+
+  const sandbox = true;
+  const paypaUrl = sandbox === true ? "https://www.sandbox.paypal.com/cgi-bin/webscr" : "https://www.paypal.com/cgi-bin/webscr";
+  const paypalId = "sb-zyvay25739447@business.example.com";
+  const cancelUrl = "http://localhost:3000/";
+  const returnUrl = "http://localhost:3000/success";
+  const currency = "USD";
 
   return (
     <Box bg="gray" paddingBlock="1rem" height="90vh">
@@ -116,16 +182,16 @@ function Booking() {
         >
           <Flex>
             <Text width="120px">Location </Text>
-            <Text color="red">{selectedLocation.locationName}</Text>
+            <Text color="red">{locationName}</Text>
           </Flex>
 
           <Flex>
             <Text width="120px">Parking Space </Text>
-            <Text color="red">{selectedSpace.spaceName}</Text>
+            <Text color="red">{spaceName}</Text>
           </Flex>
           <Flex>
             <Text width="120px">Slot </Text>
-            <Text color="red">{selectedSlot}</Text>
+            <Text color="red">{spot}</Text>
           </Flex>
 
           <Flex alignItems="center">
@@ -162,14 +228,31 @@ function Booking() {
             </Text>
           </Flex>
 
-          <Button
-            marginBlock="1rem"
-            color="white"
-            bg="green.400"
-            onClick={handleSubmit}
-          >
-            Submit
-          </Button>
+          {!vehicalNo || !entryDate || !entryTime || !hours ? (
+            <Button disabled>Payment By Paypal</Button>
+          ) : (
+            <form action={paypaUrl} method="post">
+              <div>
+                <input type="hidden" name="business" value={paypalId} />
+
+                <input type="hidden" name="amount" value={amount} />
+
+                <input type="hidden" name="currency_code" value={currency} />
+
+                <input type="hidden" name="cmd" value="_xclick" />
+
+                <input type="hidden" name="return" value={returnUrl} />
+                <input type="hidden" name="cancel_return" value={cancelUrl} />
+                <input
+                  className="paypal-btn"
+                  type="submit"
+                  name="submit"
+                  value="Payment By Paypal"
+                  onClick={handleSubmit}
+                />
+              </div>
+            </form>
+          )}
         </Box>
       </Box>
     </Box>

@@ -60,7 +60,6 @@ function Login() {
       })
 
       localStorage.setItem("userInfo", JSON.stringify(data.data))
-      // console.log(data.data);
       
       navigate("/");
 

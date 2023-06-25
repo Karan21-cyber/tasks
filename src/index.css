@@ -14,3 +14,19 @@ code {
 
 /* form css */
 
+.paypal-btn{
+  width: 100%;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  padding-block: 7px;
+  background-color: rgb(94, 206, 244);
+  border-radius: 5px;
+  color:green;
+  cursor: pointer;
+}
+
+.paypal-btn:hover{
+  background-color: aqua;
+  color: black;
+}

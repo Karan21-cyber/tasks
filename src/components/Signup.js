@@ -77,7 +77,6 @@ function Signup() {
         position:"bottom",
       });
 
-      // console.log(data);
       
       navigate("/login");
 

@@ -11,7 +11,7 @@ function Location() {
     const navigate = useNavigate();
     const params = useParams();
 
-    const { user, setSelectedSpace ,selectedLocation} = ParkingState();
+    const { user, setSelectedSpace } = ParkingState();
 
     const fetchSpaces = async () => {
       const locationId = params.location_id;
@@ -22,7 +22,7 @@ function Location() {
 
     useEffect(() => {
       fetchSpaces();
-    }, [navigate]);
+    }, []);
 
     const handlebooking = (data, id) => {
         setSelectedSpace(data);
@@ -62,7 +62,7 @@ function Location() {
               {spaces.map((data, index) => (
                 <Tr key={index}>
                   <Td>{index + 1}</Td>
-                  <Td>{selectedLocation.locationName}</Td>
+                  <Td>{data.location[0].locationName}</Td>
                   <Td>{data.spaceName}</Td>
                   <Td>{data.slots}</Td>
                   <Td>available parking</Td>
