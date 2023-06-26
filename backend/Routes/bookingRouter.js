@@ -6,6 +6,6 @@ const router = express.Router();
 router.route("/addbooking").post(addbooking);
 router.route("/singlebooking").get(singlebooking);
 router.route("/").get(fetchBooking);
-router.route("/remove/:id").delete(removeBooking);
+router.route("/removebooking/:id").delete(removeBooking);
 
 module.exports = router;
