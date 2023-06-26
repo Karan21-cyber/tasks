@@ -28,7 +28,8 @@ function Reports() {
   }, []);
 
   return (
-    <Box display="flex" flexDirection="column" gap="2rem" width="100%">
+    <Box display="flex" flexDirection="column" gap="2rem" width="100%"
+    height="100vh" overflowY="scroll">
       <Heading
         bg="gray.800"
         color="white"

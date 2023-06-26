@@ -16,14 +16,12 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { ParkingState } from "../../contextProvider/ParkingProvider";
 
 function Spaces() {
 
   const [spaces , setSpaces ] = useState([]);
 
   const navigate = useNavigate();
-  const {setSelectedSpace} = ParkingState();
 
   const fetchSpaces = async() => {
     const url = "http://localhost:5000/api/space/";
@@ -36,8 +34,7 @@ function Spaces() {
   },[])
 
 const handleEdit = (space) => {
-  setSelectedSpace(space);
-  navigate("/editSpace");
+  navigate(`/editSpace/${space._id}`);
 }
 
 const handleRemove = async(id) => {
@@ -51,7 +48,14 @@ const handleRemove = async(id) => {
 }
 
   return (
-    <Box display="flex" flexDirection="column" gap="2rem" width="100%">
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap="2rem"
+      width="100%"
+      height="100vh"
+      overflowY="scroll"
+    >
       <Heading
         bg="gray.800"
         color="white"

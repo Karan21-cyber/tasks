@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -9,56 +9,76 @@ import {
   Text,
   useToast,
 } from "@chakra-ui/react";
-import  { ParkingState } from "../../contextProvider/ParkingProvider";
+import { ParkingState } from "../../contextProvider/ParkingProvider";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function EditLocation() {
   const [locationId, setLocationId] = useState();
-  const [locationName,setLocationsName] =useState();
-  const [phone , setPhone] = useState();
+  const [locationName, setLocationsName] = useState();
+  const [phone, setPhone] = useState();
   const [address, setAddress] = useState();
-  
-  const {selectedLocation} = ParkingState();
-  // console.log(selectedLocation);
+
+  const params = useParams();
 
   const toast = useToast();
-const navigate = useNavigate();
+  const navigate = useNavigate();
 
-const handleUpdate = async() => {
+  const singleLocation = async () => {
+    const locationId = params.id;
 
-  if(!locationName || !phone || !address){
-    toast({
-      title:"Fill All fields",
-      status:"warning",
-      duration:5000,
-      isClosable:true,
-      position:"bottom"
-    })
-    return;
-  }
+    const data = await axios.get(
+      `http://localhost:5000/api/location/single/${locationId}`
+    );
 
-  try{
-    const url = "http://localhost:5000/api/location/update";
-
-    const data = await axios.put(url, {locationId, locationName,phone,address});
-
-    if(data){
-       toast({
-         title: "Data update Successfully",
-         status: "success",
-         duration: 5000,
-         isClosable: true,
-         position: "bottom",
-       });
-       navigate("/locations");
+    if (data) {
+      setLocationId(data.data._id);
+      setLocationsName(data.data.locationName);
+      setPhone(data.data.phone);
+      setAddress(data.data.address);
     }
-  }
-  catch(error){
-    return;
-  }
+  };
 
-}
+  useEffect(() => {
+    singleLocation();
+  }, []);
+
+  const handleUpdate = async () => {
+    if (!locationName || !phone || !address) {
+      toast({
+        title: "Fill All fields",
+        status: "warning",
+        duration: 5000,
+        isClosable: true,
+        position: "bottom",
+      });
+      return;
+    }
+
+    try {
+      const url = "http://localhost:5000/api/location/update";
+
+      const data = await axios.put(url, {
+        locationId,
+        locationName,
+        phone,
+        address,
+      });
+
+      if (data) {
+        toast({
+          title: "Data update Successfully",
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+          position: "bottom",
+        });
+        navigate("/locations");
+      }
+    } catch (error) {
+      return;
+    }
+  };
 
   return (
     <Box display="flex" flexDirection="column" gap="2rem" width="100%">
@@ -92,7 +112,7 @@ const handleUpdate = async() => {
           </Text>
 
           <Input
-            value={selectedLocation._id}
+            value={locationId}
             placeholder="locationId"
             type="hidden"
             onChange={(e) => setLocationId(e.target.value)}
@@ -103,7 +123,7 @@ const handleUpdate = async() => {
               Location Name
             </FormLabel>
             <Input
-              value={selectedLocation.locationName}
+              value={locationName}
               placeholder="Location Name"
               type="text"
               onChange={(e) => setLocationsName(e.target.value)}
@@ -115,7 +135,7 @@ const handleUpdate = async() => {
               Address
             </FormLabel>
             <Input
-              value={selectedLocation.address}
+              value={address}
               placeholder="Address"
               type="text"
               onChange={(e) => setAddress(e.target.value)}
@@ -127,7 +147,7 @@ const handleUpdate = async() => {
               Phone Number
             </FormLabel>
             <Input
-              value={selectedLocation.phone}
+              value={phone}
               placeholder="Phone Number"
               type="number"
               onChange={(e) => setPhone(e.target.value)}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -8,23 +8,44 @@ import {
   Input,
   Select,
   Text,
+  space,
   useToast,
 } from "@chakra-ui/react";
-import { ParkingState } from "../../contextProvider/ParkingProvider";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function EditSpace() {
-
-  const [spaceId,setSpaceId] = useState();
+  const [spaceId, setSpaceId] = useState();
   const [locationId, setLocationId] = useState();
+  const [locationName, setLocationsName] = useState();
   const [spaceName, setSpaceName] = useState();
   const [slots, setSlot] = useState();
   const [price, setPrice] = useState();
 
-  const {selectedSpace} = ParkingState();
-const toast = useToast();
-const navigate = useNavigate();
+  const toast = useToast();
+  const navigate = useNavigate();
+  const params = useParams();
+
+  const singleSpace = async () => {
+    const spaceId = params.id;
+
+    const data = await axios.get(
+      `http://localhost:5000/api/space/single/${spaceId}`
+    );
+
+    if (data) {
+      setSpaceId(data.data._id);
+      setSpaceName(data.data.spaceName);
+      setLocationId(data.data.location[0]._id);
+      setLocationsName(data.data.location[0].locationName);
+      setSlot(data.data.slots);
+      setPrice(data.data.price);
+    }
+  };
+
+  useEffect(() => {
+    singleSpace();
+  }, []);
 
   const handleUpdate = async () => {
     if (!locationId || !spaceName || !slots || !price) {
@@ -38,12 +59,15 @@ const navigate = useNavigate();
       return;
     }
 
-    const url = "http://localhost:5000/api/space/addspace";
+    const url = "http://localhost:5000/api/space/update";
 
-    const data = await axios.put(
-      url,
-      {spaceId, location: locationId, spaceName, slots, price }
-    );
+    const data = await axios.put(url, {
+      spaceId,
+      location: locationId,
+      spaceName,
+      slots,
+      price,
+    });
 
     if (data) {
       toast({
@@ -100,7 +124,7 @@ const navigate = useNavigate();
           <Input
             placeholder="spaceId"
             type="hidden"
-            value={selectedSpace._id}
+            value={spaceId}
             onChange={(e) => setSpaceId(e.target.value)}
           />
           <FormControl marginTop="10px">
@@ -108,9 +132,7 @@ const navigate = useNavigate();
               Location Name
             </FormLabel>
             <Select onChange={(e) => setLocationId(e.target.value)}>
-              <option value={selectedSpace.location[0]._id}>
-                {selectedSpace.location[0].locationName}
-              </option>
+              <option value={locationId}>{locationName}</option>
             </Select>
           </FormControl>
 
@@ -121,7 +143,7 @@ const navigate = useNavigate();
             <Input
               placeholder="Space Name"
               type="text"
-              value={selectedSpace.spaceName}
+              value={spaceName}
               onChange={(e) => setSpaceName(e.target.value)}
             />
           </FormControl>
@@ -133,7 +155,7 @@ const navigate = useNavigate();
             <Input
               placeholder="No of Slots"
               type="number"
-              value={selectedSpace.slots}
+              value={slots}
               onChange={(e) => setSlot(e.target.value)}
             />
           </FormControl>
@@ -145,13 +167,17 @@ const navigate = useNavigate();
             <Input
               placeholder="Price Per Slot"
               type="number"
-              value={selectedSpace.price}
+              value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
           </FormControl>
 
-          <Button marginBlock="1rem" color="white" bg="green.400"
-          onClick={handleUpdate}>
+          <Button
+            marginBlock="1rem"
+            color="white"
+            bg="green.400"
+            onClick={handleUpdate}
+          >
             Edit Spaces
           </Button>
         </Box>

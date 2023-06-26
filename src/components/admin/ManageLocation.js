@@ -54,13 +54,20 @@ function ManageLocation() {
     navigate("/locations")
   }
 
-  const updateLocation = (id) => {
-    setSelectedLocation(id);
-    navigate("/editlocation");
+  const updateLocation = (location) => {
+    // setSelectedLocation(id);
+    navigate(`/editlocation/${location._id}`);
   }
   
   return (
-    <Box display="flex" flexDirection="column" gap="2rem" width="100%">
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap="2rem"
+      width="100%"
+      height="100vh"
+      overflowY="scroll"
+    >
       <Heading
         bg="gray.800"
         color="white"
@@ -100,9 +107,9 @@ function ManageLocation() {
                 </Tr>
               </Thead>
               <Tbody>
-                {locations.map((location,index) => (
+                {locations.map((location, index) => (
                   <Tr key={index}>
-                    <Td>{index+1}</Td>
+                    <Td>{index + 1}</Td>
                     <Td>{location.locationName}</Td>
                     <Td>{location.address}</Td>
                     <Td>{location.phone}</Td>
@@ -111,16 +118,21 @@ function ManageLocation() {
                         fontSize="20px"
                         color="green.400"
                         cursor="pointer"
-                        onClick={(e) =>updateLocation(location)}
+                        onClick={(e) => updateLocation(location)}
                       >
                         <EditIcon />
                       </Icon>
-                      <Icon fontSize="20px" color="red" cursor="pointer" onClick={(e) => removeLocation(location._id)}>
+                      <Icon
+                        fontSize="20px"
+                        color="red"
+                        cursor="pointer"
+                        onClick={(e) => removeLocation(location._id)}
+                      >
                         <DeleteIcon />
                       </Icon>
                     </Td>
                   </Tr>
-                ))}                
+                ))}
               </Tbody>
             </Table>
           </TableContainer>

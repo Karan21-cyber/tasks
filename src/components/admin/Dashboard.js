@@ -62,8 +62,8 @@ function Dashboard() {
           <Route path="/users" element={<Users />} />
           <Route path="/addlocation" element={<AddLocation />} />
           <Route path="/addspaces" element={<AddSpace />} />
-          <Route path="/editlocation" element={<EditLocation />} />
-          <Route path="/editSpace" element={<EditSpace />} />
+          <Route path="/editlocation/:id" element={<EditLocation />} />
+          <Route path="/editSpace/:id" element={<EditSpace />} />
           <Route path="/reports" element={<Reports />} />
         </Routes>
       </Box>

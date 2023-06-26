@@ -28,7 +28,14 @@ function Users() {
     }, []);
 
   return (
-    <Box display="flex" flexDirection="column" gap="2rem" width="100%">
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap="2rem"
+      width="100%"
+      height="100vh"
+      overflowY="scroll"
+    >
       <Heading
         bg="gray.800"
         color="white"
@@ -70,7 +77,7 @@ function Users() {
               <Tbody>
                 {users.map((userData, index) => (
                   <Tr key={index}>
-                    <Td>{index+1}</Td>
+                    <Td>{index + 1}</Td>
                     <Td>{userData.name}</Td>
                     <Td>{userData.email}</Td>
                     <Td>{userData.phone}</Td>
