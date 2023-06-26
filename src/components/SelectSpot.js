@@ -1,4 +1,4 @@
-import { Box, Heading, Icon, Text,  useToast } from "@chakra-ui/react";
+import { Box, Heading, Icon, Text, useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import LocalParkingIcon from "@mui/icons-material/LocalParking";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,15 +8,14 @@ import axios from "axios";
 function SelectSpot() {
   const [space, setSpace] = useState();
   const [reserve, setReserve] = useState([]);
-  // const [locationId, setLocationId] = useState();
-  // const [spaceId, setSpaceId] = useState();
+  const [loading,setLoading] = useState(false);
 
   const boxes = [];
   const spaces = [];
 
   const params = useParams();
   const toast = useToast();
-  const {user, setSelectedSlot } = ParkingState();
+  const { user, setSelectedSlot } = ParkingState();
 
   const navigate = useNavigate();
   const id = params.spot_id;
@@ -47,37 +46,71 @@ function SelectSpot() {
     slots = space.slots;
   }
 
-  const handleSpot = async(spot) => {
+  const handleSpot = async (spot) => {
     setSelectedSlot(spot);
 
     const url = "http://localhost:5000/api/booking/addbooking";
     const config = {
-      headers:{
-        "Content-Type":"application/json",
+      headers: {
+        "Content-Type": "application/json",
       },
     };
-    
-    const data = await axios.post(url,{user:user._id,location:space.location[0]._id,space:space._id,slotNo:spot},config);
-    
+
+    const data = await axios.post(
+      url,
+      {
+        user: user._id,
+        location: space.location[0]._id,
+        space: space._id,
+        slotNo: spot,
+      },
+      config
+    );
+
     localStorage.removeItem("location");
     localStorage.removeItem("space");
     localStorage.removeItem("slotNo");
-    
+
     localStorage.setItem("location", JSON.stringify(space.location[0]));
     localStorage.setItem("space", JSON.stringify(space));
-    localStorage.setItem("slotNo",spot);
+    localStorage.setItem("slotNo", spot);
 
-    if(data)
-    {
-      toast({
-        title:"Success data inserted successfully",
-        status:"success",
-        duration:5000,
-        isClosable:true,
-        position:"bottom"
-      })
-    }
     navigate("/booking");
+  };
+
+  const removeReserve = () => {
+    reserve.map(async (data) => {
+      var bookingId = data.booking;
+      var reserve_id = data._id;
+      var entryDate = data.entryDate;
+      var entryTime = data.entryTime;
+      var hours = data.hours;
+
+      var time = entryDate + "T" + entryTime;
+      var timestamp = Date.parse(time);
+      var prev_date = new Date(timestamp);
+      prev_date.setHours(prev_date.getHours() + Number(hours));
+
+      // new date
+      var currentDate = new Date();
+
+      if (currentDate >= prev_date) {
+        const reserveRemove = await axios.delete(
+          `http://localhost:5000/api/reserve/remove/${reserve_id}`
+        );
+        const deletebooking = await axios.delete(
+          `http://localhost:5000/api/booking/removebooking/${bookingId}`
+        );
+        if (reserveRemove && deletebooking) {
+          console.log("success");
+          setLoading(true);
+        } else {
+          console.log("failure");
+        }
+      } else {
+        console.log("no data found");
+      }
+    });
   };
 
   const storeSpace = () => {
@@ -86,6 +119,7 @@ function SelectSpot() {
     }
   };
 
+  removeReserve();
   storeSpace();
 
   const displaySlots = () => {
@@ -94,16 +128,21 @@ function SelectSpot() {
     }
   };
 
-  const isSlotReserve = async (spot) => {
-    for (let i = 0; i < spaces.length; i++) {
-      if (spaces[i] === spot) {
-        return true;
-      } else {
-        return false;
-      }
+  const findslot = (slot) => {
+    const result = spaces.includes(slot);
+    if (result) {
+      return true;
+    } else {
+      return false;
     }
   };
 
+ 
+  if(loading){
+    window.location.reload();
+    setLoading(false);
+  }
+ 
   return (
     <Box bg="gray" paddingBlock="2rem" px="10%">
       <Heading
@@ -125,7 +164,7 @@ function SelectSpot() {
 
         {boxes.map((spot) => (
           <div key={spot}>
-            {isSlotReserve(spot) === true ? (
+            {findslot(spot) ? (
               <Box
                 bg="green.400"
                 width="80px"

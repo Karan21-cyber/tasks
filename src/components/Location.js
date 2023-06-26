@@ -24,10 +24,17 @@ function Location() {
       fetchSpaces();
     }, []);
 
+
     const handlebooking = (data, id) => {
         setSelectedSpace(data);
         navigate(`/selectlocation/${id}`)
     }
+
+
+    
+
+
+
 
   return (
     <Box bg="gray" paddingBlock="1rem" height="90vh" px="10%">
@@ -54,7 +61,6 @@ function Location() {
                 <Th color="white">Parking Location</Th>
                 <Th color="white">Parking Space</Th>
                 <Th color="white">Total Parking</Th>
-                <Th color="white">Vacant Parking</Th>
                 <Th color="white">Action</Th>
               </Tr>
             </Thead>
@@ -65,7 +71,6 @@ function Location() {
                   <Td>{data.location[0].locationName}</Td>
                   <Td>{data.spaceName}</Td>
                   <Td>{data.slots}</Td>
-                  <Td>available parking</Td>
                   <Td>
                     {user ? (
                       <Text
