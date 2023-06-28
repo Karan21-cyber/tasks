@@ -11,7 +11,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/chats" element={<Chat />} />
       <Route path="/call/:id" element={<VideoCall />} />
-      <Route path="/videocall/:id" element={<CallVideo />} />
+      <Route path="/videocall/:roomId" element={<CallVideo />} />
     </Routes>
   );
 }

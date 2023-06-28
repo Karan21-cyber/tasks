@@ -2,6 +2,7 @@ const express = require("express");
 const dbconnect = require("./database/db");
 const cors = require("cors");
 const app = express();
+const { v4: uuidV4 } = require("uuid");
 
 const userRoutes = require("./routes/userRoutes");
 const chatRoutes = require("./routes/chatRoutes");
@@ -14,8 +15,21 @@ app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/message", messageRouter);
 
-const server = app.listen(5000, () => {
-  console.log("Server is running on port 5000");
+
+// receiving the roomId
+app.get("/api/videocall", (req, res) => {
+  res.redirect(`/${uuidV4()}`);
+});
+
+app.get("/:room", (req, res) => {
+  // res.render("room", { roomId: req.params.room });
+  res.send({roomId:req.params.room});
+  // res.json("room" , {roomId:req.params.room});
+});
+
+const PORT = 5000;
+const server = app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 const io = require("socket.io")(server, {
@@ -57,29 +71,16 @@ io.on("connection", (socket) => {
     });
   });
 
-  // video chat
+  // for video chat
+  socket.on("join-room", (roomId, userId) => {
+    // console.log(roomId, userId);
+    socket.join(roomId);
 
-  socket.emit("me", socket.id);
+    socket.to(roomId).emit("user-connected", userId);
 
-  socket.on("disconnect", () => {
-    socket.broadcast.emit("callEnded");
-  });
-
-  socket.on("callUser", (room) => {
-    socket.in(room.userToCall).emit("callUser", {
-      signal: room.signalData,
-      from: room.from,
-      name: room.name,
+    socket.on("disconnect", () => {
+      io.to(roomId).emit("user-disconnected", userId);
     });
-  });
-
-  socket.on("answerCall", (room) => {
-    socket.in(room.to).emit("callAccepted", room.signal);
-  });
-
-  socket.on("disconnect", () => {
-    console.log("User disconnected");
-    socket.leaveAll();
   });
 
 });

@@ -14,11 +14,12 @@ import Profile from "./Profile";
 import UpdateGroupChatModal from "./UpdateGroupChatModal";
 import axios from "axios";
 import ScrollableChat from "./ScrollableChat";
-import io from "socket.io-client";
 import Lottie from "react-lottie";
 import animationData from "../assets/typing.json";
 import { FaVideo } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+
+import io from "socket.io-client";
 
 const ENDPOINT = "http://localhost:5000";
 var socket, selectedChatCompare;
@@ -30,6 +31,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
   const [socketConnected, setSocketConnected] = useState(false);
   const [typing, setTyping] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [videoId, setVideoId] = useState();
 
   const navigate = useNavigate();
 
@@ -39,7 +41,8 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
     animationData: animationData,
   };
 
-  const { user, selectedChat, setSelectedChat } = ChatState();
+  const { user, selectedChat,setCallerName, setSelectedChat, setVideoLink, setMessageId,setSenderId } =
+    ChatState();
 
   const fetchMessages = async () => {
     if (!selectedChat) {
@@ -60,9 +63,15 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
         config
       );
 
+      const index = data.length-1;
       setMessages(data);
       setLoading(false);
-
+      setVideoLink(data[index].content);
+      setMessageId(data[index]._id);
+      setCallerName(data[index].sender.firstname);
+      setSenderId(data[index].chat.users[1]._id);
+      
+      
       socket.emit("join chat", selectedChat._id);
     } catch (error) {
       return error;
@@ -96,7 +105,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
   });
 
   const sendMessage = async (event) => {
-    if (event.key === "Enter" && newMessage) {
+    if ((event.key === "Enter" && newMessage) || (event.type === "click" && newMessage)){
       socket.emit("stop typing", selectedChat._id);
       try {
         const config = {
@@ -105,7 +114,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
             Authorization: `Bearer ${user.token}`,
           },
         };
-
+        
         setNewMessage("");
         const { data } = await axios.post(
           "http://localhost:5000/api/message",
@@ -148,13 +157,57 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
     }, timerLength);
   };
 
-  // const [value ,setValue] = useState();
+  // fetchVideo Id
+  const fetchVideoId = async () => {
+    const data = await axios.get("http://localhost:5000/api/videocall");
+    setVideoId(data.data.roomId);
+    // setNewMessage(`/videocall/${data.data.roomId}`);
 
-  const handleCall = (id) => {
-    // alert(value);
-    navigate(`/videocall/${id}`);
-    // navigate(`/call/${id}`);
   };
+
+  // console.log(videoId);
+
+  useEffect(() => {
+    fetchVideoId();
+  }, []);
+
+const videoCallLink = async (newMessage) => {
+  if(newMessage){
+    socket.emit("stop typing", selectedChat._id);
+    try {
+      const config = {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      setNewMessage("");
+      const { data } = await axios.post(
+        "http://localhost:5000/api/message",
+        {
+          content: newMessage,
+          chatId: selectedChat._id,
+        },
+        config
+      );
+
+      socket.emit("new message", data);
+      setMessages([...messages, data]);
+
+      // console.log("videoId:", videoId);
+      navigate(`/videocall/${videoId}`);
+    } catch (error) {
+      return error;
+    }
+  }
+};
+
+
+  const handleCall = () => {
+    videoCallLink(`Answer:${videoId}`)
+  };
+
 
   return (
     <>
@@ -185,9 +238,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
                   size="md"
                   mx={1}
                   icon={<FaVideo />}
-                  onClick={(e) =>
-                    handleCall(user._id)
-                  }
+                  onClick={(event) => handleCall()}
                 />
 
                 <Profile user={getSenderFull(user, selectedChat.users)} />
@@ -202,7 +253,7 @@ function SingleChat({ fetchAgain, setFetchAgain }) {
                   size="md"
                   mx={1}
                   icon={<FaVideo />}
-                  onClick={(e) => handleCall(selectedChat._id)}
+                  onClick={(event) => handleCall()}
                 />
 
                 <UpdateGroupChatModal

@@ -50,4 +50,26 @@ const allMessages = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { sendMessage, allMessages };
+const updateMessage = asyncHandler(async (req, res) => {
+  try {
+    const { messageId, content } = req.body;
+
+    const update = await Message.findByIdAndUpdate(
+      messageId,
+      {
+        content,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.send(update);
+
+  } catch (error) {
+    res.send(400);
+    throw new Error(error);
+  }
+});
+
+module.exports = { sendMessage, allMessages ,updateMessage};

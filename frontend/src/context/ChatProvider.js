@@ -6,7 +6,12 @@ const ChatContext = createContext();
 const ChatProvider = ({ children }) => {
   const [user, setUser] = useState();
   const [selectedChat, setSelectedChat] = useState();
-  const  [chats, setChats] = useState([]);
+  const [chats, setChats] = useState([]);
+  const [calling, setCalling] = useState(false);
+  const [videoLink, setVideoLink] = useState();
+  const [messageId, setMessageId] = useState();
+  const [callerName,setCallerName] = useState();
+  const [senderId , setSenderId] = useState();
 
   const navigate = useNavigate();
 
@@ -22,7 +27,24 @@ const ChatProvider = ({ children }) => {
 
   return (
     <ChatContext.Provider
-      value={{ user, setUser, selectedChat, setSelectedChat, chats, setChats }}
+      value={{
+        user,
+        setUser,
+        selectedChat,
+        setSelectedChat,
+        chats,
+        setChats,
+        calling,
+        setCalling,
+        videoLink,
+        setVideoLink,
+        messageId,
+        setMessageId,
+        setCallerName,
+        callerName,
+        senderId,
+        setSenderId,
+      }}
     >
       {children}
     </ChatContext.Provider>
