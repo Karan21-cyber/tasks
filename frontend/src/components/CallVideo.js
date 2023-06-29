@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import io from 'socket.io-client';
 // import Peer from "simple-peer";
 import {Peer} from "peerjs"
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { ChatState } from '../context/ChatProvider';
 import { Box, IconButton } from '@chakra-ui/react';
 
@@ -11,26 +11,27 @@ import MicIcon from "@material-ui/icons/Mic";
 import MicOffIcon from "@material-ui/icons/MicOff";
 import VideocamIcon from "@material-ui/icons/Videocam";
 import VideocamOffIcon from "@material-ui/icons/VideocamOff";
+import axios from 'axios';
 
 const ENDPOINT = "http://localhost:5000";
 var socket;
 
 function CallVideo() {
 
-  const [mic, setMic] = useState(false);
-  const [show, setShow] = useState(false);
- const {user} = ChatState();
- const params = useParams();
- 
+  
+const [mic, setMic] = useState(true);
+const [show, setShow] = useState(true);
 
-  // console.log(roomId);
-  // console.log(id);
+const {user,messageId,setSelectedChat} = ChatState();
+const params = useParams();
+const navigate = useNavigate(); 
+
 
   useEffect(() => {
     socket = io(ENDPOINT);
     const videoGrid = document.getElementById("video-grid");
     const myVideo = document.createElement("video");
-    myVideo.muted = true;
+    
 
     const id = user._id;
     const roomId = params.roomId;
@@ -59,8 +60,8 @@ function CallVideo() {
 
     navigator.mediaDevices
       .getUserMedia({
-        video: true,
-        audio: true,
+        video: {show},
+        audio: {mic},
       })
       .then((stream) => {
         addVideoStream(myVideo, stream);
@@ -76,6 +77,7 @@ function CallVideo() {
         socket.on("user-connected", (userId) => {
           connectToNewUser(userId, stream);
         });
+        
       });
 
     socket.on("user-disconnected", (userId) => {
@@ -90,16 +92,46 @@ function CallVideo() {
     socket.on("user-connected", (userId) => {
       console.log("user connected :" + userId);
     });
-  }, [mic,show]);
+
+  }, []);
 
 
- const declineCall = () => {
+ const declineCall = async() => {
+ const content = "Call ended";
 
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+        const update = await axios.put(
+          "http://localhost:5000/api/message/update",
+          { messageId, content },config
+        );
+
+        if(update){
+          // setCalling(false);
+          // window.location.reload();
+          setSelectedChat();
+          navigate('/chats');
+
+        }
  }
+
+ const handleCamera = (par) => {
+ setShow(par);
+ }
+
+ const handleMic = (par) => {
+setMic(par);
+ }
+
+
 
   return (
     <Box>
       <Box display="flex" justifyContent="center" flexDirection="column" gap='2rem' bg='purple' height='100vh'>
+        
         <div id="video-grid"></div>
         
         <Box display="flex" justifyContent="center" gap="2rem" marginTop="2rem">
@@ -112,7 +144,7 @@ function CallVideo() {
               size="md"
               mx={1}
               icon={<MicIcon />}
-              // onClick={(event) => declineCall()}
+              onClick={(event) => handleMic(false)}
             />
           ) : (
             <IconButton
@@ -122,12 +154,12 @@ function CallVideo() {
               size="md"
               mx={1}
               icon={<MicOffIcon />}
-              // onClick={(event) => declineCall()}
+              onClick={(event) => handleMic(true)}
             />
           )}
 
           {/* video show */}
-          {mic ? (
+          {show ? (
             <IconButton
               width="20px"
               colorScheme="teal"
@@ -135,7 +167,7 @@ function CallVideo() {
               size="md"
               mx={1}
               icon={<VideocamIcon />}
-              // onClick={(event) => declineCall()}
+              onClick={(event) => handleCamera(false)}
             />
           ) : (
             <IconButton
@@ -145,7 +177,7 @@ function CallVideo() {
               size="md"
               mx={1}
               icon={<VideocamOffIcon />}
-              // onClick={(event) => declineCall()}
+              onClick={(event) => handleCamera(true)}
             />
           )}
 
@@ -156,7 +188,7 @@ function CallVideo() {
             size="md"
             mx={1}
             icon={<CallEndIcon />}
-            // onClick={(event) => declineCall()}
+            onClick={(event) => declineCall()}
           />
         </Box>
       </Box>

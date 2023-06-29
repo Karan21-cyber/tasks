@@ -19,8 +19,6 @@ function ScrollableChat({messages}) {
     videoLink,
     callerName,
     messageId,
-    selectedChat,
-    senderId,
   } = ChatState();
 
   const navigate = useNavigate();
@@ -71,7 +69,7 @@ useEffect(() => {
 
   return (
     <ScrollableFeed>
-      {calling ? (
+      {calling === true ? (
         <Box
           display="flex"
           justifyContent="center"
