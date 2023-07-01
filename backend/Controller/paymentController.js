@@ -80,15 +80,21 @@ const singlePayment = async (req , res) => {
     else{
         res.status(400).json({"error":"unable to fetch single data"});
     }
-    
-    // const payments = await Payment.findOne({_id:paymentId});
 
-    // if (payments) {
-    //   res.status(200).json(payments);
-    // } else {
-    //   res.status(400).json({ error: "Unable to fetch single data" });
-    // }
 }
 
 
-module.exports = {singlePayment,allPayments,addPayment};
+const userReport = async(req, res) => {
+  const userId  = req.params.uid;
+
+  const payments = await Payment.find({user:userId}).populate("user","-password").populate("location").populate("space");
+
+  if(payments) {
+    res.status(200).json(payments);
+  }
+  else{
+    res.status(400).json({"Error":"Unable to fetch data"});
+  }
+}
+
+module.exports = {singlePayment,allPayments,addPayment,userReport};
