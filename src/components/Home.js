@@ -5,8 +5,13 @@ import { SettingsIcon } from '@chakra-ui/icons'
 import AddLocationIcon from "@mui/icons-material/AddLocation";
 import AddToHomeScreenIcon from "@mui/icons-material/AddToHomeScreen";
 import AccountBalanceIcon from "@mui/icons-material/AccountBalance";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
+import {  useNavigate } from "react-router-dom";
 
 function Home() {
+
+  const navigate = useNavigate();
+
   return (
     <Box bg="gray">
       <Box bg="black">
@@ -29,6 +34,28 @@ function Home() {
         gap="1rem"
         paddingBlock="3rem"
       >
+        <Card width="220px">
+          <Icon
+            width="100"
+            fontSize="35px"
+            marginTop="1rem"
+            display="flex"
+            justifyContent="center"
+          >
+            <TravelExploreIcon />
+          </Icon>
+          <CardHeader>
+            <Heading size="sm">Place Your Parking</Heading>
+          </CardHeader>
+          <CardBody>
+            <Text>
+              View a summary of all your customers over the last month.
+            </Text>
+          </CardBody>
+          <CardFooter>
+            <Button onClick={(e) => navigate("/search")}>Parking</Button>
+          </CardFooter>
+        </Card>
         <Card width="220px">
           <SettingsIcon
             width="100"

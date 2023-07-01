@@ -91,7 +91,7 @@ function Completion() {
         bg="whiteAlpha.800"
         paddingLeft="2rem"
         borderRadius="5px"
-        height="65vh"
+        height="80vh"
       >
         <Heading
           textAlign="center"

@@ -12,13 +12,16 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import {ParkingState} from "../contextProvider/ParkingProvider";
 
 function Reports() {
-
   const [reports, setReports] = useState([]);
 
-  const fetchReports = async () => {
-    const url = "http://localhost:5000/api/payment";
+  const {user} = ParkingState();
+
+  const fetchReports = async () => {  
+    const url = `http://localhost:5000/api/payment/report/${user._id}`;
+    
     const data = await axios.get(url);
     setReports(data.data);
   };
@@ -28,8 +31,14 @@ function Reports() {
   }, []);
 
   return (
-    <Box display="flex" flexDirection="column" gap="2rem" width="100%"
-    height="100vh" overflowY="scroll">
+    <Box
+      display="flex"
+      flexDirection="column"
+      gap="2rem"
+      width="100%"
+      height="100vh"
+      overflowY="scroll"
+    >
       <Heading
         bg="gray.800"
         color="white"

@@ -12,6 +12,7 @@ import Completion from "./components/Completion";
 import Dashboard from "./components/admin/Dashboard";
 import { ParkingState } from "./contextProvider/ParkingProvider";
 import Footer from "./components/Footer";
+import Reports from "./components/Reports";
 
 
 function App() {
@@ -34,6 +35,7 @@ function App() {
           <Route path="/selectlocation/:spot_id" element={<SelectSpot />} />
           <Route path="/booking" element={<Booking />} />
           <Route path="/success" element={<Completion />} />
+          <Route path="/reports" element={<Reports /> } />
         </Routes>
         <Footer />
       </>
