@@ -46,31 +46,36 @@ const registerUser = async (req, res) => {
 // user login
 
 const userLogin = async (req, res) => {
-  const { email, password } = req.body;
 
-  if (!email || !password) {
-    res.status(400).json({ error: "Please Enter all the fields" });
-    throw new Error("Please enter all the fields");
+  try{
+const { email, password } = req.body;
+
+if (!email || !password) {
+  res.status(400).json({ error: "Please Enter all the fields" });
+  throw new Error("Please enter all the fields");
+}
+
+const user = await User.findOne({ email });
+if (user && (await user.matchPassword(password))) {
+  res.status(201).json({
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    address: user.address,
+    role: user.role,
+    token: generateToken(user._id),
+  });
+} else {
+  res.status(400).json({
+    error: "Unable to find user",
+  });
+  throw new Error("Unable to find User");
+}
+  }catch(error){
+    res.status(400).send("Error Occured user is unable to find");
   }
 
-  const user = await User.findOne({ email });
-  if (user && (await user.matchPassword(password))) {
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      phone: user.phone,
-      address: user.address,
-      role: user.role,
-      token: generateToken(user._id),
-    })
-  } else {
-    res.status(400).json({
-      error: "Unable to find user",
-    });
-    throw new Error("Unable to find User");
-  
-  }
 };
 
 const allUsers = async (req, res) => {
