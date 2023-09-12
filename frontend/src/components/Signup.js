@@ -11,7 +11,7 @@ import {
   useToast
 } from "@chakra-ui/react";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
-import axios from "axios";
+// import axios from "axios";
 import {useNavigate} from "react-router-dom";
 
 
@@ -63,19 +63,6 @@ const formlogin = async () => {
   }
 
   try{
-    const url = "http://localhost:5000/api/user/register";
-
-    const config = {
-      headers: {
-        "Content-type": "application/json",
-      },
-    };
-
-    const data = await axios.post(
-      url,
-      { firstname, lastname, email, password },
-      config
-    );
     toast({
       title: "Registration Successful",
       status: "success",

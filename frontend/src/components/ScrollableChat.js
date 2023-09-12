@@ -37,6 +37,9 @@ useEffect(() => {
      setCalling(false);
    }
  }
+ else {
+  setCalling(false);
+ }
 
 },[videoLink, messageId])
    

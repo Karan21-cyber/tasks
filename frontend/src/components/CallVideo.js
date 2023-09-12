@@ -32,8 +32,6 @@ const navigate = useNavigate();
     const videoGrid = document.getElementById("video-grid");
     const myVideo = document.createElement("video");
     
-
-    const id = user._id;
     const roomId = params.roomId;
     const myPeer = new Peer();
 
@@ -93,7 +91,7 @@ const navigate = useNavigate();
       console.log("user connected :" + userId);
     });
 
-  }, []);
+  }, [params.roomId, mic, show]);
 
 
  const declineCall = async() => {
